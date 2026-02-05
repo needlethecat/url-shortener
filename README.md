@@ -1,4 +1,4 @@
-# URL Shortener Coding Task
+# URL Shortener Coding Exercise
 
 ## Task
 
