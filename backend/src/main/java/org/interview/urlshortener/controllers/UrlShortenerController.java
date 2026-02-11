@@ -35,7 +35,7 @@ public class UrlShortenerController
 	@GetMapping(Urls.UrlShortener.Get.REDIRECT_URL)
 	public ResponseEntity<Void> getRedirectUrl(@PathVariable String alias)
 	{
-		//TODO handle not found 
+		//TODO handle not found
 		String fullUrl = urlShortenerService.getRedirectUrl(alias);
 		return ResponseEntity
 				.status(HttpStatus.FOUND)
@@ -43,6 +43,8 @@ public class UrlShortenerController
 				.build();
 	}
 
+	//TODO handle no fullUrl
+	//TODO handle blank custom alias, but allow null custom alias
 	@PostMapping(Urls.UrlShortener.Post.SHORTEN_URL)
 	public ResponseEntity<ShortenUrlResponseDTO> createShortUrl(@RequestBody ShortenUrlRequestDTO shortenUrlRequestDTO,
 																HttpServletRequest request)

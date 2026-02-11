@@ -18,14 +18,10 @@ I selected Redis for two main reasons:
 In a production system with larger scale or stronger durability requirements, a relational or 
 document-oriented database might be more appropriate
 
+### Alias Generation
 
-## Ongoing thinking - to be deleted later
-Database - need to store longUrl and alias, with alias being unique. Might be a good time to learn
-using redis? Seems like a good for key-value storage with alias being the key
-
-Shortening url - need to have some way to generate the short url so there is a sufficient number of 
-combinations for use. Also so that they are unique, dont want two to generate the same. Both for the
-database and also because even if a url is deleted, ideally I dont want to generate the same url for
-another url. Maybe some sort of hashing? Or maybe enough combinations that collisions are very
-unlikely 
+The url alias is generated with a Base62 random 8 character string. This gives about 200 trillion combinations.
+I check the existence of the alias in the database before saving to avoid collisions. In a production system I
+(as mentioned before) would use a different type of database with a unique id. I would use that id to encode
+a Base62 string as it would guarantee uniquess and I would be able to remove the collision check
 

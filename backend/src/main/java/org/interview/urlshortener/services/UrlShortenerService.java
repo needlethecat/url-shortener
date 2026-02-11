@@ -6,6 +6,7 @@ import org.interview.urlshortener.entities.dtos.ShortenUrlRequestDTO;
 import org.interview.urlshortener.entities.dtos.ShortenUrlResponseDTO;
 import org.interview.urlshortener.entities.dtos.UrlInfoResponseDTO;
 import org.interview.urlshortener.repositories.UrlShortenerRepository;
+import org.interview.urlshortener.utils.AliasGeneratorUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,9 +42,41 @@ public class UrlShortenerService
 
 	public ShortenUrlResponseDTO createShortUrl(ShortenUrlRequestDTO shortenUrlRequestDTO, String baseUrl)
 	{
-		System.out.println(baseUrl);
+		String alias = getAlias(shortenUrlRequestDTO.customAlias());
 		ShortUrl shortUrl = urlShortenerRepository.save(
-				new ShortUrl(shortenUrlRequestDTO.customAlias(), shortenUrlRequestDTO.fullUrl()));
+				new ShortUrl(alias, shortenUrlRequestDTO.fullUrl()));
 		return new ShortenUrlResponseDTO(baseUrl + shortUrl.getAlias());
+	}
+
+	private String getAlias(String customAlias)
+	{
+		if (customAlias != null && !customAlias.isBlank())
+		{
+			String sanitisedCustomAlias = customAlias.trim();
+			if(urlShortenerRepository.existsById(sanitisedCustomAlias))
+			{
+				throw new IllegalArgumentException("Alias already taken");
+			}
+			return sanitisedCustomAlias;
+		}
+		return generateRandomAlias();
+	}
+
+	private String generateRandomAlias()
+	{
+		int attempts = 0;
+		int maxAttempts = 5;
+
+		while (attempts < maxAttempts)
+		{
+			String alias = AliasGeneratorUtil.generateAlias();
+			if (!urlShortenerRepository.existsById(alias))
+			{
+				return alias;
+			}
+			attempts++;
+		}
+
+		throw new IllegalStateException("Unable to generate unique alias");
 	}
 }
