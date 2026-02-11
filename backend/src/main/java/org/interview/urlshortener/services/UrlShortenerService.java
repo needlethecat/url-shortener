@@ -2,11 +2,14 @@ package org.interview.urlshortener.services;
 
 import lombok.AllArgsConstructor;
 import org.interview.urlshortener.entities.ShortUrl;
-import org.interview.urlshortener.entities.dtos.ShortUrlDTO;
+import org.interview.urlshortener.entities.dtos.ShortenUrlRequestDTO;
+import org.interview.urlshortener.entities.dtos.ShortenUrlResponseDTO;
+import org.interview.urlshortener.entities.dtos.UrlInfoResponseDTO;
 import org.interview.urlshortener.repositories.UrlShortenerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @AllArgsConstructor
@@ -15,20 +18,32 @@ public class UrlShortenerService
 {
 	private final UrlShortenerRepository urlShortenerRepository;
 
-	public List<ShortUrlDTO> getAllUrls()
+	public List<UrlInfoResponseDTO> getAllUrls(String baseUrl)
 	{
 		return StreamSupport
 				.stream(urlShortenerRepository.findAll().spliterator(), false)
-				.map(url -> new ShortUrlDTO(
+				.map(url -> new UrlInfoResponseDTO(
 						url.getAlias(),
-						url.getOriginalUrl()))
+						url.getFullUrl(),
+						baseUrl + url.getAlias()))
 				.toList();
 	}
 
-	public ShortUrlDTO createShortUrl(ShortUrlDTO shortUrlDTO)
+	public String getRedirectUrl(String alias)
 	{
+		Optional<ShortUrl> shortUrl = urlShortenerRepository.findById(alias);
+		if (shortUrl.isPresent())
+		{
+			return shortUrl.get().getFullUrl();
+		}
+		return ""; //TODO handle properly
+	}
+
+	public ShortenUrlResponseDTO createShortUrl(ShortenUrlRequestDTO shortenUrlRequestDTO, String baseUrl)
+	{
+		System.out.println(baseUrl);
 		ShortUrl shortUrl = urlShortenerRepository.save(
-				new ShortUrl(shortUrlDTO.alias(), shortUrlDTO.originalUrl()));
-		return new ShortUrlDTO(shortUrl.getAlias(), shortUrl.getOriginalUrl());
+				new ShortUrl(shortenUrlRequestDTO.customAlias(), shortenUrlRequestDTO.fullUrl()));
+		return new ShortenUrlResponseDTO(baseUrl + shortUrl.getAlias());
 	}
 }

@@ -15,5 +15,5 @@ public class ShortUrl
 	@Id
 	private String alias;
 
-	private String originalUrl;
+	private String fullUrl;
 }
