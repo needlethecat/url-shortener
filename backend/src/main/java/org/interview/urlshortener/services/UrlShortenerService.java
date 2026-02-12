@@ -48,6 +48,11 @@ public class UrlShortenerService
 		return new ShortenUrlResponseDTO(baseUrl + shortUrl.getAlias());
 	}
 
+	public void deleteUrl(String alias)
+	{
+		urlShortenerRepository.deleteById(alias);
+	}
+
 	private String getAlias(String customAlias)
 	{
 		if (customAlias != null && !customAlias.isBlank())

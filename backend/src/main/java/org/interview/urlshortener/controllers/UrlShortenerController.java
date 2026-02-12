@@ -60,9 +60,12 @@ public class UrlShortenerController
 	* Request (path): alias
 	* Response: 204 or 404 depending
 	* */
-	public void deleteUrl()
+	//TODO handle not found 
+	@DeleteMapping(Urls.UrlShortener.Delete.DELETE_URL)
+	public ResponseEntity<Void> deleteUrl(@PathVariable String alias)
 	{
-		//TODO implement
+		urlShortenerService.deleteUrl(alias);
+		return ResponseEntity.noContent().build();
 	}
 
 	private String getBaseUrl(HttpServletRequest request)
